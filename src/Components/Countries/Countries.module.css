@@ -1,0 +1,12 @@
+.Countries {
+  display: flex;
+  width: 100%;
+  height: auto;
+  flex-direction: row;
+  background-color: hsl(207, 26%, 17%);
+  margin: 0 auto;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  justify-content: space-evenly;
+  align-items: center;
+}

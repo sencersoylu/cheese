@@ -1,0 +1,24 @@
+.pageContainer {
+  margin: 10px 0;
+}
+.Unordered {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  max-width: 100%;
+  width: 800px;
+  list-style-type: none;
+  margin: 0 auto;
+  background-color: hsl(209, 23%, 22%);
+  border-radius: 5px;
+  padding: 10px;
+}
+
+li {
+  padding-right: 10px;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+}
