@@ -1,179 +1,162 @@
-import React, { Component } from "react";
-import Auxiliary from "../hoc/Auxiliary";
-import Countries from "../Components/Countries/Countries";
-import Pagination from "../Components/Pagination/Pagination";
-import axios from "axios";
-import styles from "./CheeseApi.module.css";
-
+import React, { Component } from 'react';
+import Auxiliary from '../hoc/Auxiliary';
+import Cheeses from '../Components/Cheeses/Cheeses';
+import Pagination from '../Components/Pagination/Pagination';
+import axios from 'axios';
+import styles from './CheeseApi.module.css';
+import cheeseData from './Cheese.json';
+import InfiniteScroll from 'react-infinite-scroll-component';
 class CheeseApi extends Component {
-  state = {
-    cheeses: [],
-    currentCountries: 1,
-    cheesePerPage: 50,
-    loading: false,
-    searchCheese: false,
-    searchRegion: false,
-    cheeseName: "",
-    regionName: "",
-    showCheeseDetails: true
-  };
+	state = {
+		cheeses: [],
+		currentCheeses: 1,
+		cheesePerPage: 30,
+		loading: false,
+		searchCheese: false,
+		searchRegion: false,
+		cheeseName: '',
+		regionName: '',
+		hasMore: true,
+		regions: {
+			AB: 'Alberta',
+			BC: 'British Columbia',
+			MB: 'Manitoba',
+			NB: 'New Brunswick',
+			NL: 'Newfoundland and Labrador',
+			NS: 'Nova Scotia',
+			NT: 'Northwest Territories',
+			NU: 'Nunavut',
+			ON: 'Ontario',
+			PE: 'Prince Edward Island',
+			QC: 'Québec',
+			SK: 'Saskatchewan',
+			YT: 'Yukon',
+		},
+		cheesesList: [],
+	};
 
-  componentDidMount() {
-    this.setState({
-      loading: true
-    });
+	componentDidMount() {
+		this.setState({
+			loading: true,
+			cheeses: cheeseData.CheeseDirectory,
+			cheesesList: cheeseData.CheeseDirectory.slice(0, 30),
+		});
 
-    var config = {
-      method: "get",
-      url: "https://od-do.agr.gc.ca/canadianCheeseDirectory.json",
-      headers: {}
-    };
+		this.setState({
+			loading: false,
+		});
+	}
 
-    axios(config)
-      .then(function (response) {
-        console.log(JSON.stringify(response.data));
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+	handleCheeseName = (e) => {
+		let value = e.target.value;
+		this.setState({
+			searchCheese: true,
+		});
+		this.setState({
+			[e.target.name]: value,
+		});
+	};
 
-    this.setState({
-      loading: false
-    });
-  }
+	// Handling Region Name
+	handleRegionName = (val) => {
+		console.log(val);
+		this.setState({
+			regionName: val,
+		});
+		this.setState({
+			searchRegion: true,
+		});
+	};
 
-  handleCheeseName = (e) => {
-    let value = e.target.value;
-    this.setState({
-      searchCheese: true
-    });
-    this.setState({
-      [e.target.name]: value
-    });
-  };
+	componentDidUpdate = () => {
+		if (this.state.searchRegion) {
+			if (
+				this.state.regionName[0] ||
+				(this.state.regionName[0] &&
+					this.state.regionName[0] !== this.state.cheeses[0].region)
+			) {
+				console.log(
+					cheeseData.CheeseDirectory.filter(
+						(x) => x.ManufacturerProvCode == this.state.regionName[0]
+					)
+				);
+				this.setState({
+					searchRegion: false,
+					cheeses: cheeseData.CheeseDirectory.filter(
+						(x) => x.ManufacturerProvCode == this.state.regionName[0]
+					),
+					cheesesList: cheeseData.CheeseDirectory.filter(
+						(x) => x.ManufacturerProvCode == this.state.regionName[0]
+					).slice(0, 30),
+				});
+			}
+		}
+	};
 
-  // Handling Region Name
-  handleRegionName = (val) => {
-    this.setState({
-      regionName: val
-    });
-    this.setState({
-      searchRegion: true
-    });
-  };
+	changeLang(lang) {
+		console.log(lang);
+	}
 
-  handleShowCheeseDetails = () => {
-    this.setState({
-      showCheeseDetails: false
-    });
-  };
+	fetchMoreData = () => {
+		console.log("I'm fired");
+		if (this.state.cheesesList.length >= this.state.cheeses.length) {
+			this.setState({ hasMore: false });
+			return;
+		}
+		// a fake async api call like which sends
+		// 20 more records in .5 secs,
 
-  componentDidUpdate = () => {
-    if (this.state.searchRegion) {
-      if (
-        this.state.regionName ||
-        (this.state.regionName &&
-          this.state.regionName !== this.state.countries[0].region)
-      ) {
-        axios
-          .get(
-            `https://restcountries.eu/rest/v2/region/${this.state.regionName}`
-          )
-          .then((response) => {
-            this.setState({
-              countries: response.data
-            });
-          });
-        this.setState({
-          searchRegion: false
-        });
-      }
-    }
-  };
+		setTimeout(() => {
+			this.setState({
+				cheesesList: this.state.cheesesList.concat(
+					this.state.cheeses.slice(
+						this.state.cheesesList.length,
+						this.state.cheesesList.length + 30
+					)
+				),
+			});
+		}, 500);
+	};
 
-  fetchCheese = (e) => {
-    e.preventDefault();
-    if (this.state.searchCheese) {
-      if (
-        this.state.cheeseName ||
-        (this.state.cheeseName &&
-          this.state.cheeseName !== this.state.countries[0].name)
-      ) {
-        axios
-          .get(`/name/${this.state.cheeseName}?fullText=true`)
-          .then((response) => {
-            this.setState({
-              countries: response.data
-            });
-          });
-      }
-      this.setState({
-        searchCheese: false
-      });
-    }
-  };
+	render() {
+		// Get Current Countries
+		const cheeses = this.state.cheesesList;
+		//console.log(cheeses);
 
-  handleNextPage = (number) => {
-    this.setState({
-      currentCountries: number
-    });
-  };
-  render() {
-    // Get Current Countries
-    const indexOfLastPage =
-      this.state.currentCountries * this.state.countriesPerPage;
-    const indexOfFirstPage = indexOfLastPage - this.state.countriesPerPage;
-    const currentSetOfCountries = this.state.cheeses.slice(
-      indexOfFirstPage,
-      indexOfLastPage
-    );
+		return (
+			<Auxiliary>
+				<div className={styles.searchSection}>
+					<div className={styles.inputDiv}>
+						{/* <i className="fas fa-search"></i> */}
+					</div>
+					<div className={styles.dropdown}>
+						{this.state.regionName == ''
+							? 'Filter by Region'
+							: this.state.regionName[1]}
+						<i className="fas fa-chevron-down "></i>
+						<ul className={styles.dropdownContent}>
+							{Object.entries(this.state.regions).map((x, i) => (
+								<li onClick={() => this.handleRegionName(x)}>{x[1]}</li>
+							))}
+						</ul>
+					</div>
+				</div>
 
-    return (
-      <Auxiliary>
-        {this.state.showCheeseDetails ? (
-          <div className={styles.searchSection}>
-            <form className={styles.Form} onSubmit={this.fetchCheese}>
-              <div className={styles.inputDiv}>
-                {/* <i className="fas fa-search"></i> */}
-                <input
-                  type="text"
-                  placeholder="Search for a cheese..."
-                  name="cheeseName"
-                  value={this.state.cheeseName}
-                  onChange={this.handleCheeseName}
-                />
-              </div>
-            </form>
-            <div className={styles.dropdown}>
-              Filter by Region
-              {/* <i className="fas fa-chevron-down"></i> */}
-              <ul className={styles.dropdownContent}>
-                <li onClick={() => this.handleRegionName("africa")}>Africa</li>
-                <li onClick={() => this.handleRegionName("americas")}>
-                  Americas
-                </li>
-                <li onClick={() => this.handleRegionName("asia")}> Asia </li>
-                <li onClick={() => this.handleRegionName("europe")}>Europe</li>
-                <li onClick={() => this.handleRegionName("oceania")}>
-                  Oceania
-                </li>
-              </ul>
-            </div>
-          </div>
-        ) : null}
-        <Countries
-          countries={currentSetOfCountries}
-          loading={this.state.loading}
-          showDetails={() => this.handleShowCheeseDetails()}
-        />
-        <Pagination
-          countriesPerPage={this.state.countriesPerPage}
-          totalCountries={this.state.cheeses.length}
-          nextPage={this.handleNextPage}
-        />
-      </Auxiliary>
-    );
-  }
+				<InfiniteScroll
+					dataLength={cheeses.length}
+					next={this.fetchMoreData}
+					hasMore={this.state.hasMore}
+					loader={<h4>Loading...</h4>}
+					endMessage={
+						<p style={{ textAlign: 'center' }}>
+							<b>Yay! You have seen it all</b>
+						</p>
+					}>
+					<Cheeses cheeses={cheeses} loading={this.state.loading} />
+				</InfiniteScroll>
+			</Auxiliary>
+		);
+	}
 }
 
 export default CheeseApi;

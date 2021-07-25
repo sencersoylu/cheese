@@ -1,15 +1,15 @@
-import React from "react";
-import styles from "./Navbar.module.css";
+import React from 'react';
+import styles from './Navbar.module.css';
 
 const Navbar = (props) => {
-  return (
-    <div className={styles.Navbar}>
-      <h1> Where in the world? </h1>
-      <p>
-        <i className="fas fa-moon"></i> <span>Dark Mode</span>
-      </p>
-    </div>
-  );
+	return (
+		<div className={styles.Navbar}>
+			<h1> Canadian Cheeses </h1>
+			<p onClick={props.changeLang}>
+				<span>{props.language}</span>
+			</p>
+		</div>
+	);
 };
 
 export default Navbar;
