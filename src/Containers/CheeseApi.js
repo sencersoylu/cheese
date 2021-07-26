@@ -36,6 +36,15 @@ class CheeseApi extends Component {
 	};
 
 	componentDidMount() {
+		fetch('https://od-do.agr.gc.ca/canadianCheeseDirectory.json')
+			.then((res) => res.json())
+			.then((result) => {
+				this.setState({
+					isLoaded: true,
+					items: result.items,
+				});
+			});
+
 		this.setState({
 			loading: true,
 			cheeses: cheeseData.CheeseDirectory,

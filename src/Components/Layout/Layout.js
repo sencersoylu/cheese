@@ -13,6 +13,7 @@ class Layout extends Component {
 	};
 
 	render() {
+		console.log(this.props.children);
 		return (
 			<Auxiliary>
 				<Navbar language={this.state.language} changeLang={this.changeLang} />
