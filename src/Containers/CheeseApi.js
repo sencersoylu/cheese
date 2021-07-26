@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import Auxiliary from '../hoc/Auxiliary';
 import Cheeses from '../Components/Cheeses/Cheeses';
-import Pagination from '../Components/Pagination/Pagination';
-import axios from 'axios';
 import styles from './CheeseApi.module.css';
 import cheeseData from './Cheese.json';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -86,15 +84,19 @@ class CheeseApi extends Component {
 			) {
 				console.log(
 					cheeseData.CheeseDirectory.filter(
+						// eslint-disable-next-line
 						(x) => x.ManufacturerProvCode == this.state.regionName[0]
 					)
 				);
 				this.setState({
 					searchRegion: false,
+
 					cheeses: cheeseData.CheeseDirectory.filter(
+						// eslint-disable-next-line
 						(x) => x.ManufacturerProvCode == this.state.regionName[0]
 					),
 					cheesesList: cheeseData.CheeseDirectory.filter(
+						// eslint-disable-next-line
 						(x) => x.ManufacturerProvCode == this.state.regionName[0]
 					).slice(0, 30),
 				});
@@ -139,9 +141,12 @@ class CheeseApi extends Component {
 						{/* <i className="fas fa-search"></i> */}
 					</div>
 					<div className={styles.dropdown}>
-						{this.state.regionName == ''
-							? 'Filter by Region'
-							: this.state.regionName[1]}
+						{
+							// eslint-disable-next-line
+							this.state.regionName == ''
+								? 'Filter by Region'
+								: this.state.regionName[1]
+						}
 						<i className="fas fa-chevron-down "></i>
 						<ul className={styles.dropdownContent}>
 							{Object.entries(this.state.regions).map((x, i) => (

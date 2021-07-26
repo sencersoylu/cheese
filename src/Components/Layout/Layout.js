@@ -8,6 +8,7 @@ class Layout extends Component {
 	}
 
 	changeLang = () => {
+		// eslint-disable-next-line
 		if (this.state.language == 'English') this.setState({ language: 'French' });
 		else this.setState({ language: 'English' });
 	};
